@@ -7,5 +7,6 @@ export default defineConfig({
   vite: {
     plugins: [tailwindcss()],
     site: 'https://imstealinghaha.github.io',
+    base: '/imstealinghaha.github.io',
   },
 });
