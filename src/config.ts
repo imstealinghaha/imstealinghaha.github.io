@@ -1,13 +1,11 @@
 export const siteConfig = {
-  name: "Ryan Fitzgerald",
+  name: "Hayden Gilbert",
   title: "Senior Software Engineer",
-  description: "Portfolio website of Ryan Fitzgerald",
+  description: "Portfolio website of Hayden Gilbert",
   accentColor: "#1d4ed8",
   social: {
-    email: "your-email@example.com",
-    linkedin: "https://linkedin.com/in/yourprofile",
-    twitter: "https://x.com/rfitzio",
-    github: "https://github.com/RyanFitzgerald",
+    email: "haydencg2005@gmail.com",
+    linkedin: "https://linkedin.com/in/haydengilbert1",
   },
   aboutMe:
     "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Rem quos asperiores nihil consequatur tempore cupiditate architecto natus commodi corrupti quas quasi facere est, dignissimos odit nam veniam sapiente ut, vitae eligendi ipsum dolor, nostrum ullam impedit! Corrupti ratione mollitia temporibus necessitatibus, consectetur reiciendis recusandae id, dolorum quaerat, vero pariatur. Ratione!",
@@ -69,13 +67,11 @@ export const siteConfig = {
   ],
   education: [
     {
-      school: "University Name",
-      degree: "Bachelor of Science in Computer Science",
-      dateRange: "2014 - 2018",
+      school: "Indiana State University",
+      degree: "Bachelor of Science in Computer Engineering Technology",
+      dateRange: "2024 - 2028",
       achievements: [
-        "Graduated Magna Cum Laude with 3.8 GPA",
         "Dean's List all semesters",
-        "President of Computer Science Club",
       ],
     },
     {
