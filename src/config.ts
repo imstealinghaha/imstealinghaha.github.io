@@ -45,10 +45,10 @@ export const siteConfig = {
 			skills: ["React", "Node.js", "AWS"],
 		},
 		{
-			name: "Interactive Particle System",
+			name: "ASCII Vision",
 			description:
-				"Custom p5.js particle system with dynamic ASCII effects, fading and shrinking lifetimes, and evolving psychedelic gradient backgrounds.",
-			link: "#", // placeholder until hosted
+				"A custom p5.js project that transforms uploaded images into dynamic ASCII art with customizable styles and effects. Users can adjust parameters like character sets, brightness mapping, resolution, and color modes to generate unique text-based artwork. The program also supports live previews and artistic filters, blending technical precision with creative expression",
+			link: "https://editor.p5js.org/haycode/full/iNOqcSCzL", // placeholder until hosted
 			skills: ["JavaScript", "p5.js", "Creative Coding"],
 		},
 		{
