@@ -24,27 +24,6 @@ export const siteConfig = {
 	],
 	projects: [
 		{
-			name: "AI Dev Roundup Newsletter",
-			description:
-				"One concise email. Five minutes. Every Tuesday. Essential AI news & trends, production-ready libraries, powerful AI tools, and real-world code examples.",
-			link: "https://aidevroundup.com/?ref=devportfolio",
-			skills: ["React", "Node.js", "AWS"],
-		},
-		{
-			name: "Chrome Extension Mastery",
-			description:
-				"Full-stack Chrome Extension development course teaching how to build production-ready extensions with React and Node.js.",
-			link: "https://fullstackextensions.com/?ref=devportfolio",
-			skills: ["React", "Node.js", "AWS"],
-		},
-		{
-			name: "ExtensionKit",
-			description:
-				"Starter kit for Chrome extension projects with templates and examples to accelerate development.",
-			link: "https://extensionkit.io/?ref=devportfolio",
-			skills: ["React", "Node.js", "AWS"],
-		},
-		{
 			name: "Image Cropping Tool",
 			description: "A web-based image cropper with drag-and-drop functionality, multiple aspect ratios, and direct export to other applications. Features real-time preview and no server-side processing.",
 			link: "https://imstealinghaha.github.io/image-cropper/",
