@@ -45,6 +45,12 @@ export const siteConfig = {
 			skills: ["React", "Node.js", "AWS"],
 		},
 		{
+			name: "Image Cropping Tool",
+			description: "A web-based image cropper with drag-and-drop functionality, multiple aspect ratios, and direct export to other applications. Features real-time preview and no server-side processing.",
+			link: "https://imstealinghaha.github.io/image-cropper/",
+			skills: ["JavaScript", "HTML5", "CSS3", "Canvas API", "Drag & Drop API"],
+		},
+		{
 			name: "ASCII Vision",
 			description:
 				"A custom p5.js project that transforms uploaded images into dynamic ASCII art with customizable styles and effects. Users can adjust parameters like character sets, brightness mapping, resolution, and color modes to generate unique text-based artwork. The program also supports live previews and artistic filters, blending technical precision with creative expression",
