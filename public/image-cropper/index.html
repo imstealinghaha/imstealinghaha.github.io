@@ -47,21 +47,24 @@
         .main-content {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 20px;
-            padding: 20px;
-            min-height: 500px;
+            gap: 30px;
+            padding: 30px;
+            min-height: 600px;
+            align-items: start;
         }
 
         .left-panel {
             display: flex;
             flex-direction: column;
             gap: 20px;
+            height: 100%;
         }
 
         .right-panel {
             display: flex;
             flex-direction: column;
             gap: 20px;
+            height: 100%;
         }
 
         .upload-area {
@@ -74,7 +77,7 @@
             transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
-            height: 300px;
+            height: 400px;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -173,29 +176,29 @@
 
         .crop-ratio-buttons {
             display: flex;
-            gap: 6px;
+            gap: 8px;
             justify-content: center;
-            margin: 12px 0;
+            margin: 15px 0;
             flex-wrap: wrap;
         }
 
         .fit-controls {
             display: flex;
             justify-content: center;
-            margin: 8px 0;
+            margin: 10px 0;
         }
 
         .ratio-btn {
-            padding: 8px 14px;
+            padding: 10px 16px;
             border: 2px solid #007bff;
             background: white;
             color: #007bff;
             border-radius: 20px;
             cursor: pointer;
-            font-size: 11px;
+            font-size: 12px;
             font-weight: 600;
             transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1), transform 0.15s ease;
-            min-width: 70px;
+            min-width: 80px;
             position: relative;
             overflow: hidden;
             user-select: none;
@@ -226,13 +229,13 @@
         }
 
         .fit-btn {
-            padding: 8px 16px;
+            padding: 10px 20px;
             border: 2px solid #28a745;
             background: white;
             color: #28a745;
             border-radius: 20px;
             cursor: pointer;
-            font-size: 11px;
+            font-size: 12px;
             font-weight: 600;
             transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1), transform 0.15s ease;
             position: relative;
@@ -259,18 +262,21 @@
         .preview-section {
             background: #f8f9fa;
             border-radius: 15px;
-            padding: 20px;
+            padding: 30px 20px;
             text-align: center;
-            height: 300px;
+            height: 400px;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
+            position: relative;
+            border: 2px solid #e9ecef;
         }
 
         .preview-section h3 {
-            margin-bottom: 15px;
+            margin-bottom: 20px;
             color: #333;
+            font-size: 1.2em;
         }
 
         .cropped-image-container {
@@ -280,10 +286,12 @@
 
         .cropped-image {
             max-width: 100%;
+            max-height: 300px;
             height: auto;
             border-radius: 10px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
             cursor: grab;
+            object-fit: contain;
         }
 
         .cropped-image:active {
@@ -294,8 +302,9 @@
             display: flex;
             gap: 15px;
             justify-content: center;
-            margin-top: 20px;
+            margin-top: 25px;
             flex-wrap: wrap;
+            align-items: center;
         }
 
         .btn {
@@ -350,16 +359,24 @@
         }
 
         .format-selector {
-            margin: 15px 0;
+            margin: 20px 0;
             text-align: center;
         }
 
         .format-selector select {
-            padding: 8px 15px;
+            padding: 10px 18px;
             border: 2px solid #dee2e6;
             border-radius: 20px;
             background: white;
             font-weight: 600;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .format-selector select:hover {
+            border-color: #007bff;
+            box-shadow: 0 2px 8px rgba(0,123,255,0.1);
         }
 
         .drag-instructions {
@@ -401,12 +418,12 @@
         @media (max-width: 768px) {
             .main-content {
                 grid-template-columns: 1fr;
-                gap: 15px;
-                padding: 15px;
+                gap: 20px;
+                padding: 20px;
             }
 
             .header {
-                padding: 15px;
+                padding: 20px;
             }
 
             .header h1 {
@@ -414,28 +431,28 @@
             }
 
             .crop-ratio-buttons {
-                gap: 4px;
+                gap: 6px;
             }
 
             .ratio-btn {
                 font-size: 10px;
-                padding: 6px 10px;
-                min-width: 60px;
+                padding: 8px 12px;
+                min-width: 65px;
             }
 
             .fit-btn {
                 font-size: 10px;
-                padding: 6px 12px;
+                padding: 8px 16px;
             }
 
             .controls {
                 flex-direction: column;
                 align-items: center;
-                gap: 10px;
+                gap: 15px;
             }
 
             .upload-area, .preview-section {
-                height: 250px;
+                height: 300px;
             }
         }
     </style>
@@ -729,6 +746,11 @@
             isDragging = false;
             activeHandle = null;
             
+            // Clean up initial crop state
+            if (window.initialCropState) {
+                delete window.initialCropState;
+            }
+            
             // Trigger crop update after movement stops
             debouncedCropUpdate();
         }
@@ -747,60 +769,97 @@
                           e.target.classList.contains('top-right') ? 'tr' :
                           e.target.classList.contains('bottom-left') ? 'bl' : 'br';
             
-            const imageRect = originalImage.getBoundingClientRect();
             initialMouseX = e.clientX;
             initialMouseY = e.clientY;
+            
+            // Store the initial crop state
             initialCropX = cropSelection.x;
             initialCropY = cropSelection.y;
+            const initialWidth = cropSelection.width;
+            const initialHeight = cropSelection.height;
+            
+            // Store initial crop bounds for this resize operation
+            window.initialCropState = {
+                x: initialCropX,
+                y: initialCropY,
+                width: initialWidth,
+                height: initialHeight
+            };
         }
 
         function handleCropResize(e) {
-            if (!activeHandle || !originalImageData) return;
+            if (!activeHandle || !originalImageData || !window.initialCropState) return;
 
             const imageRect = originalImage.getBoundingClientRect();
             const scaleX = originalImageData.width / imageRect.width;
             const scaleY = originalImageData.height / imageRect.height;
             
-            const deltaX = (e.clientX - initialMouseX) * scaleX;
-            const deltaY = (e.clientY - initialMouseY) * scaleY;
+            // Calculate mouse movement in image coordinates
+            const mousePixelDeltaX = (e.clientX - initialMouseX);
+            const mousePixelDeltaY = (e.clientY - initialMouseY);
+            const imageDeltaX = mousePixelDeltaX * scaleX;
+            const imageDeltaY = mousePixelDeltaY * scaleY;
             
-            let newX = cropSelection.x;
-            let newY = cropSelection.y;
-            let newWidth = cropSelection.width;
-            let newHeight = cropSelection.height;
+            // Start with initial crop state
+            let newX = window.initialCropState.x;
+            let newY = window.initialCropState.y;
+            let newWidth = window.initialCropState.width;
+            let newHeight = window.initialCropState.height;
             
+            // Apply deltas based on which handle is being dragged
             switch(activeHandle) {
-                case 'tl': // Top-left
-                    newX = initialCropX + deltaX;
-                    newY = initialCropY + deltaY;
-                    newWidth = cropSelection.width - deltaX;
-                    newHeight = cropSelection.height - deltaY;
+                case 'tl': // Top-left: move top-left corner
+                    newX = window.initialCropState.x + imageDeltaX;
+                    newY = window.initialCropState.y + imageDeltaY;
+                    newWidth = window.initialCropState.width - imageDeltaX;
+                    newHeight = window.initialCropState.height - imageDeltaY;
                     break;
-                case 'tr': // Top-right
-                    newY = initialCropY + deltaY;
-                    newWidth = cropSelection.width + deltaX;
-                    newHeight = cropSelection.height - deltaY;
+                case 'tr': // Top-right: move top-right corner
+                    newY = window.initialCropState.y + imageDeltaY;
+                    newWidth = window.initialCropState.width + imageDeltaX;
+                    newHeight = window.initialCropState.height - imageDeltaY;
                     break;
-                case 'bl': // Bottom-left
-                    newX = initialCropX + deltaX;
-                    newWidth = cropSelection.width - deltaX;
-                    newHeight = cropSelection.height + deltaY;
+                case 'bl': // Bottom-left: move bottom-left corner
+                    newX = window.initialCropState.x + imageDeltaX;
+                    newWidth = window.initialCropState.width - imageDeltaX;
+                    newHeight = window.initialCropState.height + imageDeltaY;
                     break;
-                case 'br': // Bottom-right
-                    newWidth = cropSelection.width + deltaX;
-                    newHeight = cropSelection.height + deltaY;
+                case 'br': // Bottom-right: move bottom-right corner
+                    newWidth = window.initialCropState.width + imageDeltaX;
+                    newHeight = window.initialCropState.height + imageDeltaY;
                     break;
             }
             
-            // Ensure minimum size
-            const minSize = 20;
+            // Enforce minimum size constraints
+            const minSize = 30;
             if (newWidth < minSize || newHeight < minSize) return;
             
             // Constrain to image boundaries
             newX = Math.max(0, newX);
             newY = Math.max(0, newY);
-            newWidth = Math.min(newWidth, originalImageData.width - newX);
-            newHeight = Math.min(newHeight, originalImageData.height - newY);
+            
+            // Ensure crop doesn't go outside image bounds
+            if (newX + newWidth > originalImageData.width) {
+                if (activeHandle.includes('l')) { // Left handles
+                    newX = originalImageData.width - newWidth;
+                } else { // Right handles
+                    newWidth = originalImageData.width - newX;
+                }
+            }
+            
+            if (newY + newHeight > originalImageData.height) {
+                if (activeHandle.includes('t')) { // Top handles
+                    newY = originalImageData.height - newHeight;
+                } else { // Bottom handles
+                    newHeight = originalImageData.height - newY;
+                }
+            }
+            
+            // Final boundary check
+            newX = Math.max(0, Math.min(newX, originalImageData.width - minSize));
+            newY = Math.max(0, Math.min(newY, originalImageData.height - minSize));
+            newWidth = Math.max(minSize, Math.min(newWidth, originalImageData.width - newX));
+            newHeight = Math.max(minSize, Math.min(newHeight, originalImageData.height - newY));
             
             // Update crop selection
             cropSelection.x = newX;
