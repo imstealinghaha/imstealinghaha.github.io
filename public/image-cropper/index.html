@@ -116,7 +116,6 @@
             cursor: move;
             z-index: 1000;
             display: none;
-            box-shadow: 0 0 0 9999px rgba(0,0,0,0.5);
         }
 
         .crop-overlay::before {
@@ -130,6 +129,40 @@
             background: #007bff;
             border-radius: 50%;
             opacity: 0.8;
+        }
+
+        .crop-handle {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background: #007bff;
+            border: 2px solid white;
+            border-radius: 50%;
+            cursor: nw-resize;
+        }
+
+        .crop-handle.top-left {
+            top: -8px;
+            left: -8px;
+            cursor: nw-resize;
+        }
+
+        .crop-handle.top-right {
+            top: -8px;
+            right: -8px;
+            cursor: ne-resize;
+        }
+
+        .crop-handle.bottom-left {
+            bottom: -8px;
+            left: -8px;
+            cursor: sw-resize;
+        }
+
+        .crop-handle.bottom-right {
+            bottom: -8px;
+            right: -8px;
+            cursor: se-resize;
         }
 
         .crop-ratio-buttons {
@@ -392,10 +425,13 @@
         <div class="main-content">
             <div class="left-panel">
                 <div class="preview-section">
-                    <h3>📋 Crop Preview</h3>
-                    <canvas id="previewCanvas" style="max-width: 100%; border-radius: 10px; display: none;"></canvas>
-                    <div id="previewPlaceholder" style="color: #6c757d; padding: 40px;">
-                        Select an area to crop
+                    <h3>✂️ Cropped Image</h3>
+                    <img id="croppedImage" class="cropped-image" draggable="true" alt="Cropped image" style="max-width: 100%; height: auto; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); cursor: grab; display: none;">
+                    <div id="previewPlaceholder" style="color: #6c757d; padding: 40px; text-align: center;">
+                        Select an image to start cropping
+                    </div>
+                    <div id="dragInstructions" class="drag-instructions" style="display: none;">
+                        🖱️ Drag this image to other applications to export!
                     </div>
                 </div>
             </div>
@@ -439,19 +475,16 @@
                         <button id="downloadBtn" class="btn btn-primary" style="display: none;">💾 Download</button>
                     </div>
                 </div>
-
-                <div id="croppedImageContainer" class="cropped-image-container">
-                    <h3>✂️ Cropped Result</h3>
-                    <img id="croppedImage" class="cropped-image" draggable="true" alt="Cropped image">
-                    <div id="dragInstructions" class="drag-instructions">
-                        🖱️ Drag this image to other applications to export!
-                    </div>
-                </div>
             </div>
         </div>
     </div>
 
-    <div id="cropOverlay" class="crop-overlay"></div>
+    <div id="cropOverlay" class="crop-overlay">
+        <div class="crop-handle top-left"></div>
+        <div class="crop-handle top-right"></div>
+        <div class="crop-handle bottom-left"></div>
+        <div class="crop-handle bottom-right"></div>
+    </div>
 
     <script>
         // Global variables
@@ -469,14 +502,12 @@
         const fileInput = document.getElementById('fileInput');
         const imageContainer = document.getElementById('imageContainer');
         const originalImage = document.getElementById('originalImage');
-        const previewCanvas = document.getElementById('previewCanvas');
         const previewPlaceholder = document.getElementById('previewPlaceholder');
         const cropOverlay = document.getElementById('cropOverlay');
         const ratioButtons = document.querySelectorAll('.ratio-btn');
         const formatSelect = document.getElementById('formatSelect');
         const newImageBtn = document.getElementById('newImageBtn');
         const downloadBtn = document.getElementById('downloadBtn');
-        const croppedImageContainer = document.getElementById('croppedImageContainer');
         const croppedImage = document.getElementById('croppedImage');
         const dragInstructions = document.getElementById('dragInstructions');
         const fitToImageBtn = document.getElementById('fitToImageBtn');
@@ -596,12 +627,9 @@
         }
 
         function initializeCropSelection() {
-            const imageRect = originalImage.getBoundingClientRect();
-            const containerPadding = 30;
-            
-            // Set initial crop selection to center 50% of image
-            const cropWidth = Math.min(200, imageRect.width * 0.5);
-            const cropHeight = Math.min(200, imageRect.height * 0.5);
+            // Set initial crop selection to center 60% of image
+            const cropWidth = originalImageData.width * 0.6;
+            const cropHeight = originalImageData.height * 0.6;
             
             cropSelection = {
                 x: (originalImageData.width - cropWidth) / 2,
@@ -610,6 +638,8 @@
                 height: cropHeight
             };
 
+            // Show the crop overlay immediately
+            cropOverlay.style.display = 'block';
             updateCropOverlay();
             performCrop();
         }
@@ -828,37 +858,14 @@
 
                 croppedImageData = canvas.toDataURL(mimeType, quality);
                 
-                // Update preview
-                updatePreview(canvas);
-                
-                // Update cropped image for drag and drop
+                // Update the cropped image display
                 croppedImage.src = croppedImageData;
-                croppedImageContainer.style.display = 'block';
+                croppedImage.style.display = 'block';
+                previewPlaceholder.style.display = 'none';
                 dragInstructions.style.display = 'block';
             };
 
             img.src = originalImageData.src;
-        }
-
-        function updatePreview(canvas) {
-            const previewCtx = previewCanvas.getContext('2d');
-            const maxSize = 300;
-            
-            let displayWidth = canvas.width;
-            let displayHeight = canvas.height;
-            
-            if (displayWidth > maxSize || displayHeight > maxSize) {
-                const scale = Math.min(maxSize / displayWidth, maxSize / displayHeight);
-                displayWidth *= scale;
-                displayHeight *= scale;
-            }
-            
-            previewCanvas.width = displayWidth;
-            previewCanvas.height = displayHeight;
-            previewCanvas.style.display = 'block';
-            previewPlaceholder.style.display = 'none';
-            
-            previewCtx.drawImage(canvas, 0, 0, displayWidth, displayHeight);
         }
 
         function downloadCroppedImage() {
@@ -896,11 +903,11 @@
             setTimeout(() => {
                 uploadArea.style.display = 'flex';
                 imageContainer.style.display = 'none';
-                croppedImageContainer.style.display = 'none';
                 cropOverlay.style.display = 'none';
                 dragInstructions.style.display = 'none';
-                previewCanvas.style.display = 'none';
+                croppedImage.style.display = 'none';
                 previewPlaceholder.style.display = 'block';
+                previewPlaceholder.textContent = 'Select an image to start cropping';
                 
                 fileInput.value = '';
                 originalImageData = null;
